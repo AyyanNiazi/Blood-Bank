@@ -1,26 +1,24 @@
 import React from 'react'
-import {Route,Redirect,BrowserRouter} from 'react-router-dom'
+import {Link,Redirect,BrowserRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import * as firebase from 'firebase'
-import Home from './home'
-import { userInfo } from 'os';
 import logo from './images/logo.png'
-import Routes from '../component/routes';
-
 
 class Navbar extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            user : '',
-            logout: false
+            user : '    ',
+            logout: false,
+            navbar: true,
         }
     }
     componentWillMount(){
         firebase.auth().onAuthStateChanged((user)=>{
             if(user){
                 this.setState({
-                    user:user   
+                    user:user,
+                    // navbar:true,   
                 })
             }
             else{
@@ -29,26 +27,25 @@ class Navbar extends React.Component{
         })
     }
 
-logout(e){
+logout(){
     firebase.auth().signOut().then(()=>{
         this.setState({
-            logout: true
+            logout: true,
+            navbar: false,
         })
-        // this.props.history.push('/')
+        // this.props.history.push('/login')
     })
 }
-componentWillReceiveProps(nextProps){
-    console.log("Will recieave props : ", nextProps)
-}
+// componentWillReceiveProps(nextProps){
+//     console.log("Will recieave props : ", nextProps)
+// }
     render(){
-        const {logout} = this.state
-        if(logout === true){
-            return (
-                <BrowserRouter> 
-                <Route path='/' component={Home}  />
-                </BrowserRouter>
-            )
-        }
+        // const {logout} = this.state
+        // if(logout === true){
+        //     return (
+        //        <Redirect to='/login' />
+        //     )
+        // }
         return(
             <div>
 
@@ -57,29 +54,52 @@ componentWillReceiveProps(nextProps){
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-     <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="nav navbar-nav">
+                    <div class="collapse navbar-collapse" id="navbarNav">
+    {this.props.authReducer.authLogout === false || this.state.logout === true ? <div>
+<ul class="nav navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <Link class="nav-link" to="/">Home <span class="sr-only">(current)</span></Link>
+      </li> </ul>  </div>
+      :   <ul class="nav navbar-nav">
+      <li class="nav-item active">
+      <Link class="nav-link" to="/">Home <span class="sr-only">(current)</span></Link>
+    </li>
+      <li class="nav-item" style={{float: 'left'}} >
+        <Link class="nav-link" to="/bloodDonor"  >Blood Donor</Link>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
-      </li>
-      <li class="nav-item">
+      <li class="nav-item" style={{float: 'right'}} >
+        <Link class="nav-link" to="/requireDonor">Require Donor </Link>
+      </li>  </ul>  }
+      {/* <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-      </li>
-    </ul>
+      </li> */}
     <ul class="nav navbar-nav navbar-right"
-    style={{color: 'white', marginLeft: '52vw'}} >
+    style={{color: 'white', }} >
     <li class="nav-item">
-        <button type="button" class="btn btn-secondary"
-         data-container="body"
-          data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
-            Popover on top
-        </button>
+        {this.state.user ? <div class='nav-link' >  
+                {this.props.authReducer.authLogout === !false && this.state.logout === false ? 
+                    <div style={{marginLeft: '80vh'}} >
+                         <li class="nav-item"> <h4> <i class="fa fa-user"  style={{marginRight: '2vh', fontSize: '4vh'}} ></i>
+                          {this.props.authReducer.userinfo.username} <Link to='/login' onClick={this.logout.bind(this)} > 
+                           <i style={{marginLeft: '4vh',color: '#dc3545'  }} class="fa fa-power-off"></i> </Link>
+                          </h4>  </li> 
+                         {/* {this.props.authReducer.userinfo.useremail} <br/> */}
+                    </div>
+                
+                 :
+                        <div style={{marginLeft: '105vh'}}  >
+                        {this.props.authReducer.authLogout === true || this.state.logout === true }
+                        <li class="nav-item">  <i class="fa fa-user"  style={{marginRight: '2vh', fontSize: '4vh'}} ></i>
+                        
+                        <Link classs='nav-link' style={{color: 'rgba(255,255,255,0.5)', fontSize: '3vh'}} to='/login' > Login </Link>
+                        </li>
+                        </div> 
+                    } 
+                </div> 
+                 : void 0
+                //  <button class='btn btn-secondary' onClick={this.logout.bind(this)} >Logout</button>
+                 
+                 }
         {/* <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Logout</button> */}
         {/* <li><a href="#"><span style={{color: 'white'}} class="glyphicon glyphicon-user"></span> Sign Up</a></li> */}
       </li>
@@ -91,25 +111,9 @@ componentWillReceiveProps(nextProps){
 
                {/* <Link to='/bloodDonor' >Blood Donor</Link><br/> */}
                 {/* <Link to='/requireDonor' >Required Blood</Link><br/> */}
-                {this.state.user ? <div>  
-                {this.props.authReducer.authLogout === !false ? 
-                    <div>
-                         {this.props.authReducer.userinfo.username} <br/>
-                         {this.props.authReducer.userinfo.useremail} <br/>
-                    </div>
-                
-                 :
-                        <div>
-                        {this.props.authReducer.authLogout === true}
-                        </div> 
-                    } 
-                </div> 
-                 : 
-                 <button onClick={this.logout.bind(this)} >Logout</button>
-                 
-                 }
+               
 
-        <button onClick={this.logout.bind(this)} >Logout</button>
+        {/* <button onClick={this.logout.bind(this)} >Logout</button> */}
 
             </div>
 

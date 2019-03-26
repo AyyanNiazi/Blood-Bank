@@ -42,44 +42,42 @@ class Routes extends React.Component{
     }
 }
 
-componentDidMount () {
-    this.setState({
-        lodaing: false
-    })
-    this.removeListener = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({
-          authed: true,
-        })
-      } else {
-        this.setState({
-          authed: false,
-        })
-      }
-    })
-}
+// componentDidMount () {
+//     this.setState({
+//         lodaing: false
+//     })
+//     this.removeListener = firebase.auth().onAuthStateChanged((user) => {
+//       if (user) {
+//         this.setState({
+//           authed: true,
+//         })
+//       } else {
+//         this.setState({
+//           authed: false,
+//         })
+//       }
+//     })
+// }
 
-componentWillUnmount(){
-    this.removeListener()
-}
+// componentWillUnmount(){
+//     this.removeListener()
+// }
     render(){
-        return this.state.lodaing === true ? <div class="progress" style={{margin: '50'}} >
-        <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style={{width: "100%"}} aria-valuenow="100"
-         aria-valuemin="0" aria-valuemax="100"></div>
-      </div>
-        : (
-            <div>
-                <Navbar/>
+        return ( 
+      
+        
                <BrowserRouter>            
+            <div>
+               <Navbar/>
                 <Switch>
-                    <Route   path='/login' component={Login} />
-                    <Route    path='/signup' component={Signup} />
+                    <Route exact  path='/login' component={Login} />
+                    <Route  exact  path='/signup' component={Signup} />
                     <Route exact path='/' component={Home} />
-                    <Route    path='/requireDonor' component={RequireDonor} />
-                    <Route    path='/bloodDonor' component={BloodDonor} />
+                    <Route  exact  path='/requireDonor' component={RequireDonor} />
+                    <Route  exact  path='/bloodDonor' component={BloodDonor} />
                 </Switch>
-               </BrowserRouter>
             </div>
+            </BrowserRouter>
         )
     }
 }
